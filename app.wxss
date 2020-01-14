@@ -1,0 +1,35 @@
+/**app.wxss**/
+/* .container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+}  */
+
+page {
+  flex: 1;
+  display: flex;
+  background: #f7f7f7;
+  width: 100%;
+  height: 100%;
+}
+
+view {
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: #333333;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.swiperBox image {
+  min-width: 100%;
+  height: 100%;
+  background-size: cover !important;
+}
