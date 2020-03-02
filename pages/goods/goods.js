@@ -143,7 +143,7 @@ Page({
   selAppendList(e) { //选择附加列表
     let { appenditem } = e.target.dataset;
     let { appendList, active_total_price, active_good_num } = this.data;
-    console.log(appendList);
+    // console.log(appendList);
 
     if (appendList.indexOf(appenditem.id) == -1) { //添加、减少附加参数逻辑
       appendList.push(appenditem.id);
@@ -298,51 +298,56 @@ Page({
     });
   },
   toSum() { //结算 ----重点 调用支付宝刷脸付逻辑
-    if (!this.data.cardSumMoney) return my.showToast({ content: '购物车为空' });
-    $http.POST($api.orderPay.createOrder, { type: 1 }).then((res) => { //获取后台商品订单号
-      if (res.data.code === 200) {
-        my.ix.startApp({
-          appName: 'cashier',
-          bizNo: res.data.data.order_sn,
-          totalAmount: res.data.data.order_amount.toString(),
-          success: (r) => {
-            $http.POST($api.orderPay.alipy, { 'bar_code': r.barCode, 'order_sn': r.bizNo }).then((res) => { //提交刷脸支付二维码及订单单号
-              if (res.data.code === 200) {
-                this.setData({ //清空数据
-                  gwcpopup: false,
-                  cardSumNum: 0,
-                  cardSumMoney: 0,
-                  cardsList: []
-                })
-              } else {
-                wx.showToast({
-                  icon: 'none',
-                  title: res.data.msg
-                });
-              }
-            });
-          },
-          fail: (cancel) => { //支付失败或用户点击取消,清空购物车数据
-            // my.confirm({
-            //   title: cancel.errorMessage,
-            //   content: '您需要清空购物车吗?',
-            //   confirmButtonText: '确定',
-            //   cancelButtonText: '取消',
-            //   success: (result) => {
-            //     if (result.confirm) {
-            this.clearCards();
-            //     }
-            //   },
-            // });
-          }
-        });
-      } else {
-        wx.showToast({
-          icon: 'none',
-          title: res.data.msg
-        });
-      }
+    if (!this.data.cardSumMoney) return wx.showToast({icon:"none", title: '购物车为空' });
+    wx.showToast({
+      icon: "none",
+      title: '需要配合青蛙设备使用!',
     })
+    // $http.POST($api.orderPay.createOrder, { type: 1 }).then((res) => { //获取后台商品订单号
+    //   if (res.data.code === 200) {
+       
+    //     my.ix.startApp({
+    //       appName: 'cashier',
+    //       bizNo: res.data.data.order_sn,
+    //       totalAmount: res.data.data.order_amount.toString(),
+    //       success: (r) => {
+    //         $http.POST($api.orderPay.alipy, { 'bar_code': r.barCode, 'order_sn': r.bizNo }).then((res) => { //提交刷脸支付二维码及订单单号
+    //           if (res.data.code === 200) {
+    //             this.setData({ //清空数据
+    //               gwcpopup: false,
+    //               cardSumNum: 0,
+    //               cardSumMoney: 0,
+    //               cardsList: []
+    //             })
+    //           } else {
+    //             wx.showToast({
+    //               icon: 'none',
+    //               title: res.data.msg
+    //             });
+    //           }
+    //         });
+    //       },
+    //       fail: (cancel) => { //支付失败或用户点击取消,清空购物车数据
+    //         // my.confirm({
+    //         //   title: cancel.errorMessage,
+    //         //   content: '您需要清空购物车吗?',
+    //         //   confirmButtonText: '确定',
+    //         //   cancelButtonText: '取消',
+    //         //   success: (result) => {
+    //         //     if (result.confirm) {
+    //         this.clearCards();
+    //         //     }
+    //         //   },
+    //         // });
+    //       }
+    //     });
+    //   } else {
+    //     wx.showToast({
+    //       icon: 'none',
+    //       title: res.data.msg
+    //     });
+    //   }
+    // })
   },
   loadMore() { //加载更多
     if (this.data.isLoadEnd) return;
@@ -408,8 +413,10 @@ Page({
     })
   },
   onLoad(query) {
-    let { data } = wx.getStorageSync("storeName");
-    wx.setNavigationBarTitle({ title: data });
+    let storeName = wx.getStorageSync("storeName");
+    wx.setNavigationBarTitle({
+      title: '商品页面',
+    })
     // 页面加载
     this.getCategory();
     this.data.height = wx.getSystemInfoSync().windowHeight;

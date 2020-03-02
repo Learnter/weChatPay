@@ -34,8 +34,10 @@ Page({
   onHide() {
     // my.ix.offKeyEventChange(); //关闭键盘监听事件
   },
-  fetchSwipers() {  //获取首页轮播
-    $http.POST($api.swiper.homeSwiper, { type: 1 }).then((res) => {
+  fetchSwipers() { //获取首页轮播
+    $http.POST($api.swiper.homeSwiper, {
+      type: 1
+    }).then((res) => {
       if (res.data.code === 200) {
         this.setData({
           list: res.data.data
@@ -44,87 +46,144 @@ Page({
     })
   },
   inputOnBlur(e) { //输入框失去焦点
-    let { value } = e.detail;
+    let {
+      value
+    } = e.detail;
     this.setData({
       amount: value
     })
   },
-  facePay:function() { //扫脸支付
-    let { amount } = this.data;
-    if (!amount) return wx.showToast({ icon: 'none', title: '请先输入付款金额' });
-    console.log(amount);
-    $http.POST($api.swiper.amountPay, { price: amount }).then((res) => {
-      if (res.data.code === 200) {
-        // my.ix.startApp({
-        //   appName: 'cashier',
-        //   bizNo: res.data.data.order_sn,
-        //   totalAmount: res.data.data.order_amount.toString(),
-        //   success: (r) => {
-        //     $http.POST($api.orderPay.alipy, { 'bar_code': r.barCode, 'order_sn': r.bizNo }).then((res) => { //提交刷脸支付二维码及订单单号
-        //       if (res.data.code === 200) {
-        //         this.setData({ //清空数据
-        //           amount: ''
-        //         })
-        //       } else {
-        //         my.showToast({
-        //           type: 'exception',
-        //           content: res.data.msg
-        //         });
-        //       }
-        //     });
-        //   },
-        //   fail: (cancel) => {
-        //     my.showToast({ content: '取消支付', type: 'exception' });
-        //     this.setData({
-        //       amount: ''
-        //     })
-        //   }
-        // });
-      } else {
-        wx.showToast({
-          icon: 'none',
-          title: res.data.msg
-        });
-      }
+  facePay: function() { //扫脸支付
+    let {amount} = this.data;
+    if (!amount) return wx.showToast({
+      icon: 'none',
+      title: '请先输入付款金额'
+    });
+    wx.showToast({
+      icon:"none",
+      title: '需配合青蛙设备使用'
     })
+    // $http.POST($api.swiper.amountPay, {
+    //   price: amount,
+    //   type: 2
+    // }).then((res) => {
+    //   if (res.data.code === 200) {
+    //     console.log(res.data);
+    //     // wxfaceapp.facePay({ //唤醒设备的刷脸支付流程
+    //     //   requireFaceCode: true,//是否需要获取付款码返回给小程序
+    //     //     success(res) {
+    //     //       if(res.replyCode == "0"){ //唤醒刷脸成功
+    //     //         wxfaceapp.onFacePayPassEvent(function (res) { //监听刷脸成功
+
+    //     //         })
+
+    //     //         wxfaceapp.onFacePayFailedEvent(function (res) { //监听刷脸失败
+    //     //           wx.showToast({
+    //     //             icon: 'none',
+    //     //             title: '刷脸失败!',
+    //     //           })
+    //     //           this.setData({ amount: '' })
+    //     //         })
+    //     //       }
+    //     //     },
+    //     //   fail(res) {
+    //     //    wx.showToast({
+    //     //      icon:'none',
+    //     //      title:"刷脸唤醒失败!"
+    //     //    })
+    //     //   }
+    //     // })
+
+    //     // my.ix.startApp({
+    //     //   appName: 'cashier',
+    //     //   bizNo: res.data.data.order_sn,
+    //     //   totalAmount: res.data.data.order_amount.toString(),
+    //     //   success: (r) => {
+    //     //     $http.POST($api.orderPay.alipy, { 'bar_code': r.barCode, 'order_sn': r.bizNo }).then((res) => { //提交刷脸支付二维码及订单单号
+    //     //       if (res.data.code === 200) {
+    //     //         this.setData({ //清空数据
+    //     //           amount: ''
+    //     //         })
+    //     //       } else {
+    //     //         my.showToast({
+    //     //           type: 'exception',
+    //     //           content: res.data.msg
+    //     //         });
+    //     //       }
+    //     //     });
+    //     //   },
+    //     //   fail: (cancel) => {
+    //     //     my.showToast({ content: '取消支付', type: 'exception' });
+    //     //     this.setData({
+    //     //       amount: ''
+    //     //     })
+    //     //   }
+    //     // });
+    //   } else {
+    //     wx.showToast({
+    //       icon: 'none',
+    //       title: res.data.msg
+    //     });
+    //   }
+    // })
   },
   codePay() { //扫码支付
-    let { amount } = this.data;
-    if (!amount) return wx.showToast({ type: 'exception', content: '请先输入付款金额' });
-    $http.POST($api.swiper.amountPay, { price: amount }).then((res) => {
-      if (res.data.code === 200) {
-        // my.ix.startApp({
-        //   appName: 'cashier',
-        //   bizNo: res.data.data.order_sn,
-        //   totalAmount: res.data.data.order_amount.toString(),
-        //   showScanPayResult: true,
-        //   success: (r) => {
-        //     $http.POST($api.orderPay.alipy, { 'bar_code': r.barCode, 'order_sn': r.bizNo }).then((res) => { //提交刷脸支付二维码及订单单号
-        //       if (res.data.code === 200) {
-        //         this.setData({ //清空数据
-        //           amount: ''
-        //         })
-        //       } else {
-        //         my.showToast({
-        //           type: 'exception',
-        //           content: res.data.msg
-        //         });
-        //       }
-        //     });
-        //   },
-        //   fail: (cancel) => {
-        //     my.showToast({ content: '取消支付', type: 'exception' });
-        //     this.setData({
-        //       amount: ''
-        //     })
-        //   }
-        // });
-      } else {
-        wx.showToast({
-          icon: 'none',
-          title: res.data.msg
-        });
-      }
+    let {amount} = this.data;
+    if (!amount) return wx.showToast({
+      icon: 'none',
+      title: '请先输入付款金额'
+    });
+    wx.showToast({
+      icon: "none",
+      title: '需配合青蛙设备使用!'
     })
+    // $http.POST($api.swiper.amountPay, {price: amount}).then((res) => {
+    //   if (res.data.code === 200) {
+    //     console.log(res.data);
+
+    //     // wxfaceapp.listenCodePayment({ //注册设备扫码
+    //     //   success(res) { 
+    //     //     wxfaceapp.onCodePayEvent(function (res) { //被扫码回调事件
+    //     //       if(res.replyCode == "0"){
+    //     //         //被扫码到的具体的码
+    //     //         console.log("onCodePayEvent code scanned = " + res.code)
+    //     //       }
+    //     //     })
+    //     //   }
+    //     // })
+
+    //     // my.ix.startApp({
+    //     //   appName: 'cashier',
+    //     //   bizNo: res.data.data.order_sn,
+    //     //   totalAmount: res.data.data.order_amount.toString(),
+    //     //   showScanPayResult: true,
+    //     //   success: (r) => {
+    //     //     $http.POST($api.orderPay.alipy, { 'bar_code': r.barCode, 'order_sn': r.bizNo }).then((res) => { //提交刷脸支付二维码及订单单号
+    //     //       if (res.data.code === 200) {
+    //     //         this.setData({ //清空数据
+    //     //           amount: ''
+    //     //         })
+    //     //       } else {
+    //     //         my.showToast({
+    //     //           type: 'exception',
+    //     //           content: res.data.msg
+    //     //         });
+    //     //       }
+    //     //     });
+    //     //   },
+    //     //   fail: (cancel) => {
+    //     //     my.showToast({ content: '取消支付', type: 'exception' });
+    //     //     this.setData({
+    //     //       amount: ''
+    //     //     })
+    //     //   }
+    //     // });
+    //   } else {
+    //     wx.showToast({
+    //       icon: 'none',
+    //       title: res.data.msg
+    //     });
+    //   }
+    // })
   }
 });

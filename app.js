@@ -1,6 +1,22 @@
 //app.js
 App({
   onLaunch: function () {
+
+    wx.setStorageSync("serialNumber", "HJKDSAHHD201214414");
+
+    //获取青蛙设备号
+    // wxfaceapp.checkWxFacePayOsInfo({
+    //   success(res) {
+    //     wx.setStorageSync("serialNumber", res.osSerialNumber);
+    //   },
+    //   fail(res) {
+    //    wx.showToast({
+    //      icon:"none",
+    //      title:"获取设备号失败,请联系开发人员!"
+    //    })
+    //   }
+    // })
+
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
