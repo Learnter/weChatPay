@@ -88,11 +88,31 @@
             <text class="texe_1">清空购物车</text>
           </view>
         </view>
+
         <scroll-view scroll-y="{{true}}" style="height:480rpx">
           <view wx:for="{{cardsList}}" wx:key="index">
-            <swipe-action index="{{index}}" restore="{{swipeIndex === null || swipeIndex !== index}}" right="{{right}}" extra="{{item}}" onRightItemClick="onRightItemClick" onSwipeStart="onSwipeStart">
+
+          <van-swipe-cell  right-width="{{65}}"  data-goods_id="{{item.goods_id}}"   async-close bind:close="onRightItemClick">
+            <van-cell-group >
+                <view class="uni-flex" style="padding:0 10rpx">
+                  <view class="cardlistimg">
+                    <image src="{{item.picture}}"></image></view>
+                  <view class="selllistwz">
+                    <view class="selllistTl">{{item.goods_name}}</view>
+                    <view class="gwcllistms">{{item.spec_name}}</view>
+                    <view class="selllistgczBox1">
+                      <view class="selllistjgs">￥{{item.amount * item.goods_num}}</view>
+                      <van-stepper bind:change="changeCardNumber" value="{{item.goods_num}}" data-index="{{index}}" data-item="{{item}}"/>
+                    </view>
+                  </view>
+                </view>
+            </van-cell-group>
+            <view slot="right" class="van_swipe_cell__right">删除</view>
+          </van-swipe-cell>
+
+         
+            <!-- <swipe-action index="{{index}}" restore="{{swipeIndex === null || swipeIndex !== index}}" right="{{right}}" extra="{{item}}" onRightItemClick="onRightItemClick" onSwipeStart="onSwipeStart">
               <list-item index="{{index}}" key="items-{{index}}" last="{{index === cardsList.length - 1}}">
-                <!-- {{item.content}} -->
                 <view class="uni-flex">
                   <view class="cardlistimg">
                     <image src="{{item.picture}}"></image></view>
@@ -101,15 +121,14 @@
                     <view class="gwcllistms">{{item.spec_name}}</view>
                     <view class="selllistgczBox1">
                       <view class="selllistjgs">￥{{item.amount * item.goods_num}}</view>
-                      <!-- <stepper onChange="changeCardNumber"  indexAttr="{{index}}" dataAttr="{{item}}"  step="{{1}}" showNumber readOnly="{{true}}" value="{{item.goods_num}}" min="{{1}}" max="{{100}}"/> -->
-
                       <van-stepper bind:change="changeCardNumber" value="{{item.goods_num}}" data-index="{{index}}" data-item="{{item}}"/>
                     </view>
                   </view>
                 </view>
-                <!-- </view> -->
               </list-item>
-            </swipe-action>
+            </swipe-action> -->
+
+
           </view>
         </scroll-view>
       </view>

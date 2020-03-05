@@ -1,5 +1,7 @@
 {
   "usingComponents": {
-   "van-stepper": "vant-weapp/stepper/index"
+   "van-stepper": "vant-weapp/stepper/index",
+   "van-swipe-cell": "/miniprogram_npm/vant-weapp/swipe-cell/index"
   }
+
 }

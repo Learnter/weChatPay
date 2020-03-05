@@ -1,4 +1,15 @@
 /* pages/goods/goods.wxss */
+
+.van_swipe_cell__right {
+  display: inline-block;
+  width: 65px;
+  height: 100%;
+  line-height:65px;
+  color: #fff;
+  text-align: center;
+  background-color: #f44;
+}
+
 .uni-flex{
     display:flex;
     align-items:center;
