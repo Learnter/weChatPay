@@ -1,4 +1,5 @@
-<view class="container">
+ <wxs src="../../utils/indexOf.wxs" module="toolStr" />
+ <view class="container">
   <view class="page-body">
     <scroll-view class="nav-left" scroll-y="true" >
       <view class="nav-left-item {{index == categoryActive ? 'active' :''}}" bindtap="categoryClickMain" 
@@ -55,14 +56,15 @@
         <view>
           <view class="spuspcTl" wx:if="{{garnish.length !== 0}}">附加：</view>
           <view class="spuspcOneBox">
-            <view class="spuspcOne {{appendList.indexOf(item.id) !== -1 ? 'spuspcOneActive' : ''}}" wx:for="{{garnish}}"   wx:key="index" bindtap="selAppendList" data-appendItem="{{item}}">{{item.val}}</view>
+            <view class="spuspcOne {{toolStr.indexOf(appendList,item.id) !== -1 ? 'spuspcOneActive' : ''}}"
+             wx:for="{{garnish}}"   wx:key="index" bindtap="selAppendList" data-appendItem="{{item}}">{{item.val}}</view>
           </view>
         </view>
         <view class="spuspcTl">数量：</view>
         <view class="spuspcbanr">
           <!-- <stepper onChange="callBackFn" step="{{1}}" showNumber readOnly="{{false}}" value="{{active_good_num}}" min="{{1}}" max="{{100}}"/> -->
            <!-- <stepper bind:addInfo="callBackFn"/> -->
-            <van-stepper  disableInput="true" bind:change="callBackFn" value="{{active_good_num}}"/>
+            <van-stepper  input-width="40px" button-size="32px"  disableInput="true" bind:change="callBackFn" value="{{active_good_num}}"/>
         </view>
         <view class="supbotmBox">
           <view class="supbotmfx">

@@ -16,7 +16,8 @@ const POST = function(Url, Data, Token) {
       },
       fail: function(result) {
         wx.showToast({
-          content: '服务器数据请求失败'
+          icon:"none",
+          title: '服务器数据请求失败'
         });
       }
     });

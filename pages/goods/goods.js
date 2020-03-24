@@ -27,7 +27,7 @@ Page({
     active_init_price: 0, //激活规格的初始化价格
     active_total_price: 0, //激活规格的总价格
     active_spec_data: [], //激活的规格选项列表
-    appendList: [51], //激活的附加项id
+    appendList: [], //激活的附加项id
     height: 0,
     categoryActive: 0,
     scrollTop: 0,
@@ -40,10 +40,7 @@ Page({
     });
   },
   categoryClickMain(event) { //切换左边分类列表
-    let {
-      item,
-      index
-    } = event.target.dataset;
+    let {item,index} = event.target.dataset;
     this.reConfig.cate_id = item.cate_id;
     this.reConfig.page = 0;
     this.setData({
@@ -91,21 +88,12 @@ Page({
     })
   },
   chooseType(e) { //选择规格
-    let {
-      goodid,
-      goodname,
-      goodprice
-    } = e.target.dataset;
-    $http.POST($api.orderPay.specification, {
-      goods_id: goodid
-    }).then((res) => {
+    let {goodid,goodname,goodprice} = e.target.dataset;
+    $http.POST($api.orderPay.specification, {goods_id: goodid}).then((res) => {
       if (res.data.code === 200) {
         let activeSpecItem = [];
         if (Object.keys(res.data.data).length !== 0) {
-          let {
-            spec_data,
-            garnish
-          } = res.data.data; //对象解构
+          let {spec_data, garnish} = res.data.data; //对象解构
           spec_data.forEach((item) => { //默认选中第一个
             item.items[0].selected = true;
             activeSpecItem.push(item.items[0].id);
@@ -142,36 +130,21 @@ Page({
     })
   },
   selspec(e) { //选择规格列表
-    let {
-      parentindex,
-      index,
-      childitem
-    } = e.target.dataset; //对象解构
-    let {
-      spec_data,
-      active_spec_data,
-      appendList
-    } = this.data;
+    let { parentindex,index, childitem} = e.target.dataset; //对象解构
+    let { spec_data,active_spec_data,appendList} = this.data;
     active_spec_data[parentindex] = childitem.id; //根据父索引赋值新的规格id
     spec_data[parentindex].items.forEach((item) => { //激活新的选项、取消旧的选项
       item.id === childitem.id ? item.selected = true : item.selected = false;
     });
     this.fetchSpecMoney(this.data.activeGood, active_spec_data.join("_")); //动态获取商品规格价格
-
     this.setData({
       'spec_data': spec_data,
       appendList: []
     })
   },
   selAppendList(e) { //选择附加列表
-    let {
-      appenditem
-    } = e.target.dataset;
-    let {
-      appendList,
-      active_total_price,
-      active_good_num
-    } = this.data;
+    let {appenditem} = e.target.dataset;
+    let {appendList,active_total_price,active_good_num} = this.data;
     // console.log(appendList);
 
     if (appendList.indexOf(appenditem.id) == -1) { //添加、减少附加参数逻辑
@@ -202,9 +175,7 @@ Page({
     })
   },
   fetchSpecMoney(goodsId, specIds) { //获取规格金额
-    let {
-      active_good_num
-    } = this.data;
+    let {active_good_num} = this.data;
     $http.POST($api.orderPay.price, {
       'goods_id': goodsId,
       'spec_ids': specIds
@@ -297,7 +268,6 @@ Page({
   onRightItemClick(e) { //删除购物车列表
     let { instance } = e.detail; //获取组件实例
     let {goods_id} = e.target.dataset; //获取组件自定义属性的值
-    console.log(e);
     $http.POST($api.orderPay.deleteCart, {
       'goods_id': goods_id
     }).then((res) => {
@@ -360,42 +330,37 @@ Page({
       icon: "none",
       title: '购物车为空'
     });
-    wx.showToast({
-      icon: "none",
-      title: '需要配合青蛙设备使用!',
-    })
-    $http.POST($api.orderPay.createOrder, {
-      type: 1
-    }).then((res) => { //获取后台商品订单号
+    $http.POST($api.orderPay.createOrder, {type: 1}).then((res) => { //获取后台商品订单号
       if (res.data.code === 200) {
-
+        let {order_sn} = res.data.data;
         wxfaceapp.facePay({
           requireFaceCode: true,//是否需要获取付款码返回给小程序
-            success(res) {
+            success:(res)=> {
               if (res.replyCode == "0") { //唤醒刷脸成功
-                wxfaceapp.onFacePayPassEvent(function (success) { //监听刷脸成功
-                  $http.POST($api.orderPay.alipy, { 'bar_code': success.faceCode, 'order_sn': order_sn }).then((res) => { //提交刷脸支付二维码及订单单号
-                    if (res.data.code === 200) {
-                      this.setData({ //清空数据
-                        gwcpopup: false,
-                        cardSumNum: 0,
-                        cardSumMoney: 0,
-                        cardsList: []
-                      })
-                    } else {
-                      wx.showToast({
-                        icon: 'none',
-                        title: res.data.msg
-                      });
-                    }
-                  });
-                })
-                wxfaceapp.onFacePayFailedEvent(function (fail) { //监听刷脸失败
-                  wx.showToast({
-                    icon: 'none',
-                    title: '刷脸失败!',
-                  })
-                  this.clearCards();
+                wxfaceapp.onFacePayPassEvent((success)=> { //监听刷脸成功
+                  if(success.replyCode == 0){//提交刷脸支付二维码及订单单号
+                    $http.POST($api.orderPay.alipy, { 'bar_code': success.faceCode, 'order_sn': order_sn, type: "2" }).then((res) => { 
+                      if (res.data.code === 200) {
+                        this.setData({ //清空数据
+                          gwcpopup: false,
+                          cardSumNum: 0,
+                          cardSumMoney: 0,
+                          cardsList: []
+                        })
+                      } else {
+                        wx.showToast({
+                          icon: 'none',
+                          title: res.data.msg
+                        });
+                      }
+                    });
+                  }else{
+                    wx.showToast({
+                      icon: 'none',
+                      title: '取消支付!',
+                    })
+                    this.clearCards();
+                  }
                 })
               }
             },
@@ -482,7 +447,7 @@ Page({
   onLoad(query) {
     let storeName = wx.getStorageSync("storeName");
     wx.setNavigationBarTitle({
-      title: '商品页面',
+      title: storeName || '商品页面'
     })
     // 页面加载
     this.getCategory();

@@ -6,9 +6,9 @@ Page({
     amount: '' //价格
   },
   onLoad() {
-    // let { data } = wx.getStorageSync({ key: 'storeName' });
+    let data= wx.getStorageSync('storeName');
     wx.setNavigationBarTitle({
-      title: '支付页面',
+      title: data
     })
     this.fetchSwipers();
   },
@@ -61,36 +61,45 @@ Page({
       icon: 'none',
       title: '请先输入付款金额'
     });
-    $http.POST($api.swiper.amountPay, {price: amount,type: 2}).then((res) => {
+    $http.POST($api.swiper.amountPay, {
+      price: amount,
+      type: 2
+    }).then((res) => {
       if (res.data.code === 200) {
-        // console.log(res.data);
-        let { order_sn}  = res.data;
+        // wx.showToast({icon: 'none',title: '刷脸请求后端返回订单号!'})
+        let {order_sn} = res.data.data;
         wxfaceapp.facePay({ //唤醒设备的刷脸支付流程
           requireFaceCode: true, //是否需要获取付款码返回给小程序
-          success(res) {
+          success: (res) => {
             if (res.replyCode == "0") { //唤醒刷脸成功
-              wxfaceapp.onFacePayPassEvent(function(success) { //监听刷脸成功
-                $http.POST($api.orderPay.alipy, { 'bar_code': success.faceCode, 'order_sn': order_sn }).then((res) => { //提交刷脸支付二维码及订单单号
-                  if (res.data.code === 200) {
-                    this.setData({ //清空数据
-                      amount: ''
-                    })
-                  } else {
-                    wx.showToast({
-                      icon: 'none',
-                      title: res.data.msg
-                    });
-                  }
-                });
-              })
-              wxfaceapp.onFacePayFailedEvent(function(fail) { //监听刷脸失败
-                wx.showToast({
-                  icon: 'none',
-                  title: '刷脸失败!',
-                })
-                this.setData({
-                  amount: ''
-                })
+              wxfaceapp.onFacePayPassEvent((success) => { //监听刷脸成功
+                if (success.replyCode == 0) {
+                  $http.POST($api.orderPay.alipy, {
+                    'bar_code': success.faceCode,
+                    'order_sn': order_sn,
+                    type: "2"
+                  }).then((res) => { //提交刷脸支付二维码及订单单号
+                    if (res.data.code === 200) {
+                      wx.showToast({
+                        icon: 'success',
+                        title: '支付成功!'
+                      })
+                      this.setData({ //清空数据
+                        amount: ''
+                      })
+                    } else {
+                      wx.showToast({
+                        icon: 'none',
+                        title: res.data.msg
+                      });
+                    }
+                  });
+                }else{
+                  wx.showToast({icon: 'none',title: '取消支付'})
+                  this.setData({ //清空数据
+                    amount: ''
+                  })
+                }
               })
             }
           },
@@ -117,25 +126,31 @@ Page({
       icon: 'none',
       title: '请先输入付款金额'
     });
-    $http.POST($api.swiper.amountPay, {price: amount}).then((res) => {
+    $http.POST($api.swiper.amountPay, {
+      price: amount
+    }).then((res) => {
       if (res.data.code === 200) {
-        console.log(res.data);
-        let {order_sn} = res.data;
+        let {
+          order_sn
+        } = res.data.data;
         wxfaceapp.listenCodePayment({ //注册设备扫码
-          success(res) {
-            wxfaceapp.onCodePayEvent(function(res) { //被扫码回调事件
+          success: (res) => {
+            wx.showToast({
+              title: "请出示付款码",
+              icon: "none"
+            });
+            wxfaceapp.onCodePayEvent((res) => { //被扫码回调事件
               if (res.replyCode == "0") {
-                //被扫码到的具体的码
-                console.log("onCodePayEvent code scanned = " + res.code)
-                wx.showToast({
-                  title: `扫码的值为：${res.code}`,
-                })
-
                 $http.POST($api.orderPay.alipy, {
                   'bar_code': res.code,
-                  'order_sn': order_sn
+                  'order_sn': order_sn,
+                  type: "1"
                 }).then((res) => { //提交刷脸支付二维码及订单单号
                   if (res.data.code === 200) {
+                    wx.showToast({
+                      icon: 'success',
+                      title: '支付成功!'
+                    });
                     this.setData({ //清空数据
                       amount: ''
                     })
@@ -146,6 +161,11 @@ Page({
                     });
                   }
                 });
+              } else {
+                wx.showToast({ icon: 'none', title: '取消支付' })
+                this.setData({ //清空数据
+                  amount: ''
+                })
               }
             })
           }

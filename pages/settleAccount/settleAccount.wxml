@@ -1,8 +1,8 @@
 <view class="container">
   <swiper indicator-dots="{{true}}" autoplay="{{true}}"  circular="{{true}}" class="swiperBox" >
-    <block a:for="{{list}}">
+    <block wx:for="{{list}}" data-index="{{index}}" data-item="{{item}}"  wx:key="index">
       <swiper-item>
-        <image src="/image/banner1.jpg"/>
+        <image src="{{item.banner}}"/>
       </swiper-item>
     </block>
   </swiper>
